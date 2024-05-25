@@ -19,24 +19,30 @@ export const findOfferById = (id) => {
 };
 
 export const createOffer = (offer) => {
-  const { user_id, title, description, company } = offer;
+  const { user_id, title, description, company, location, link_offer, stack_required, notes, interest, modality, creation_date } = offer;
   return new Promise((resolve, reject) => {
-    pool.query('INSERT INTO offers (user_id, title, description, company) VALUES (?, ?, ?, ?)',
-      [user_id, title, description, company], (error, results) => {
+    pool.query(
+      'INSERT INTO offers (user_id, title, description, company, location, link_offer, stack_required, notes, interest, modality, creation_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [user_id, title, description, company, location, link_offer, stack_required, notes, interest, modality, creation_date],
+      (error, results) => {
         if (error) reject(error);
         else resolve({ id: results.insertId, ...offer });
-    });
+      }
+    );
   });
 };
 
 export const updateOffer = (id, offer) => {
-  const { title, description, company } = offer;
+  const { title, description, company, location, link_offer, stack_required, notes, interest, modality, creation_date } = offer;
   return new Promise((resolve, reject) => {
-    pool.query('UPDATE offers SET title = ?, description = ?, company = ? WHERE id = ?',
-      [title, description, company, id], (error) => {
+    pool.query(
+      'UPDATE offers SET title = ?, description = ?, company = ?, location = ?, link_offer = ?, stack_required = ?, notes = ?, interest = ?, modality = ?, creation_date = ? WHERE id = ?',
+      [title, description, company, location, link_offer, stack_required, notes, interest, modality, creation_date, id],
+      (error) => {
         if (error) reject(error);
         else resolve({ id, ...offer });
-    });
+      }
+    );
   });
 };
 

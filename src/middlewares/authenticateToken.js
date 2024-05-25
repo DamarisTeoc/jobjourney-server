@@ -6,7 +6,7 @@ const authenticateToken = (req, res, next) => {
 
   if (token == null) return res.sendStatus(401); // No token provided
 
-  jwt.verify(token, process.env.JWT_SECRET || 'tu_clave_secreta', (err, user) => {
+  jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret_key', (err, user) => {
     if (err) return res.sendStatus(403); // Invalid token
     req.user = user;
     next();
