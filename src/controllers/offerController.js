@@ -21,7 +21,7 @@ export const getOfferById = async (req, res) => {
 
 export const createOffer = async (req, res) => {
   try {
-    const newOffer = await OfferModel.createOffer({ ...req.body, user_id: req.user.id });
+    const newOffer = await OfferModel.createOffer({ ...req.body, user_id: req.user.user_id });
     res.status(201).json(newOffer);
   } catch (error) {
     res.status(500).json({ message: 'Error creating offer', error });

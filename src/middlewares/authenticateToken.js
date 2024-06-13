@@ -8,6 +8,7 @@ const authenticateToken = (req, res, next) => {
 
   jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret_key', (err, user) => {
     if (err) return res.sendStatus(403); // Invalid token
+    console.log('Decoded user:', user);
     req.user = user;
     next();
   });

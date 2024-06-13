@@ -15,7 +15,7 @@ const UserModel = {
               reject(new Error('Error creating user'));
             }
           } else {
-            resolve({ id: results.insertId, username, email });
+            resolve({ user_id: results.insertId, username, email });
           }
         }
       );
@@ -39,7 +39,7 @@ const UserModel = {
   },
 
 
-  deleteUser: (id) => {
+  deleteUser: (user_id) => {
     return new Promise((resolve, reject) => {
       const sql = 'DELETE FROM users WHERE user_id = ?';
       pool.query(sql, [user_id], (error, results) => {
@@ -71,10 +71,10 @@ const UserModel = {
     });
   },
 
-  getUserById: (id) => {
+  getUserById: (user_id) => {
     return new Promise((resolve, reject) => {
       const sql = 'SELECT user_id, username, email FROM users WHERE id = ?'; // No incluir la contraseña por seguridad
-      pool.query(sql, [id], (error, results) => {
+      pool.query(sql, [user_id], (error, results) => {
         if (error) {
           reject(error);
         } else {

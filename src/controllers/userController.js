@@ -72,7 +72,7 @@ const UserController = {
       }
 
       // Generar token JWT
-      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET || 'tu_clave_secreta', { expiresIn: '1h' });
+      const token = jwt.sign({ user_id: user.user_id }, process.env.JWT_SECRET || 'tu_clave_secreta', { expiresIn: '1h' });
 
       // Excluir la contraseña de la respuesta
       const { password: _, ...userWithoutPassword } = user;
