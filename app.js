@@ -37,6 +37,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/offers', offerRoutes);
 app.use('/api/offers/states', authenticateToken, offerStateRelationRoutes);
+app.use('/api/states', offerStateRelationRoutes); // Nueva ruta
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);

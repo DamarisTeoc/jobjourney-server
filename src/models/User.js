@@ -41,19 +41,72 @@ const UserModel = {
 
   deleteUser: (user_id) => {
     return new Promise((resolve, reject) => {
-      const sql = 'DELETE FROM users WHERE user_id = ?';
-      pool.query(sql, [user_id], (error, results) => {
-        if (error) {
-          reject(error);
-        } else {
-          if (results.affectedRows === 0) {
-            // No se encontró el usuario para eliminar
-            reject(new Error('User not found'));
-          } else {
-            // Usuario eliminado con éxito
-            resolve({ message: 'User deleted successfully', user_id });
-          }
+      pool.getConnection((err, connection) => {
+        if (err) {
+          reject(err);
+          return;
         }
+
+        connection.beginTransaction((err) => {
+          if (err) {
+            connection.release();
+            reject(err);
+            return;
+          }
+
+          // Primero, elimina las relaciones de estado de la oferta
+          connection.query(
+            'DELETE FROM offer_state_relations WHERE offer_id IN (SELECT offer_id FROM offers WHERE user_id = ?)',
+            [user_id],
+            (error, results) => {
+              if (error) {
+                return connection.rollback(() => {
+                  connection.release();
+                  reject(error);
+                });
+              }
+
+              // Luego, elimina las ofertas asociadas al usuario
+              connection.query(
+                'DELETE FROM offers WHERE user_id = ?',
+                [user_id],
+                (error, results) => {
+                  if (error) {
+                    return connection.rollback(() => {
+                      connection.release();
+                      reject(error);
+                    });
+                  }
+
+                  // Finalmente, elimina el usuario
+                  connection.query(
+                    'DELETE FROM users WHERE user_id = ?',
+                    [user_id],
+                    (error, results) => {
+                      if (error) {
+                        return connection.rollback(() => {
+                          connection.release();
+                          reject(error);
+                        });
+                      }
+
+                      connection.commit((err) => {
+                        if (err) {
+                          return connection.rollback(() => {
+                            connection.release();
+                            reject(err);
+                          });
+                        }
+                        connection.release();
+                        resolve({ message: 'User and associated offers deleted successfully', user_id });
+                      });
+                    }
+                  );
+                }
+              );
+            }
+          );
+        });
       });
     });
   },
